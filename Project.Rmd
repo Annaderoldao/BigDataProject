@@ -1,0 +1,228 @@
+---
+title: "Untitled"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+date: '2022-03-06'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+setwd("~/CIND820")
+library(readr)
+Dataset <- read_csv("C:/Users/annac/OneDrive/Desktop/Data Analytics/CIND820/Dataset.csv") 
+str(Dataset)
+head(Dataset)
+summary(Dataset)
+```
+```{r}
+Dataset$DGUID <- NULL
+Dataset$DECIMALS <- NULL
+Dataset$TERMINATED <- NULL
+Dataset$SYMBOL <- NULL
+Dataset$STATUS <- NULL
+Dataset$UOM_ID <- NULL
+Dataset$SCALAR_ID <- NULL
+Dataset$SCALAR_FACTOR <- NULL
+Dataset$UOM_ID <- NULL
+```
+
+```{r}
+head(Dataset)
+```
+
+
+```{r}
+Dataset$VECTOR <- NULL
+Dataset$COORDINATE <- NULL
+```
+
+
+```{r}
+head(Dataset)
+```
+
+
+
+```{r}
+Dataset$Sex <- as.factor(Dataset$Sex)
+str(Dataset$Sex)
+as.numeric(Dataset$Sex)
+```
+
+```{r}
+Dataset$`Age at admission` <- as.factor(Dataset$`Age at admission`)
+Dataset$`Years since admission` <- as.factor(Dataset$`Years since admission`)
+Dataset$`Income type` <- as.factor(Dataset$`Income type`)
+Dataset$Statistics <- as.factor(Dataset$Statistics)
+Dataset$UOM <- as.factor(Dataset$UOM)
+```
+
+
+```{r}
+str(Dataset$`Age at admission`)
+str(Dataset$`Years since admission`)
+str(Dataset$`Income type`)
+str(Dataset$Statistics)
+str(Dataset$UOM)
+```
+
+
+
+```{r}
+as.numeric(Dataset$`Age at admission`)
+as.numeric(Dataset$`Years since admission`)
+as.numeric(Dataset$`Income type`)
+as.numeric(Dataset$Statistics)
+as.numeric(Dataset$UOM)
+```
+
+
+
+```{r}
+str(Dataset)
+```
+
+
+```{r}
+library(dplyr)
+rename(Dataset, c("Year" = "REF_DATE"))
+rename(Dataset, c("Age at Admission" = "Age at admission"))
+rename(Dataset, c("Years Since Admission" = "Years since admission"))
+rename(Dataset, c("Income Type" = "Income type"))
+rename(Dataset, c("Unit of Analysis" = "UOM"))
+rename(Dataset, c("Value" = "VALUE"))
+```
+
+
+```{r}
+Dataset$`Immigrant admission category` <- NULL
+Dataset$GEO <- NULL
+```
+
+
+
+```{r}
+library(dplyr)
+rename(Dataset, c( "Year" = "REF_DATE"))
+rename(Dataset, c("Age at Admission" = "Age at admission"))
+rename(Dataset, c("Years Since Admission" = "Years since admission"))
+rename(Dataset, c("Income Type" = "Income type"))
+rename(Dataset, c("Unit of Analysis" = "UOM"))
+rename(Dataset, c("Value" = "VALUE"))
+head(Dataset)
+```
+
+
+
+```{r}
+Mean <- mean(Dataset$VALUE, na.rm = TRUE)
+Dataset$VALUE[is.na(Dataset$VALUE)]= Mean
+summary(Dataset$VALUE)
+
+```
+
+
+
+```{r}
+summary(Dataset)
+```
+
+```{r}
+as.numeric(Dataset$`Age at admission`)
+as.numeric(Dataset$`Years since admission`)
+as.numeric(Dataset$`Income type`)
+as.numeric(Dataset$Statistics)
+as.numeric(Dataset$UOM)
+as.numeric(Dataset$REF_DATE)
+Dataset
+```
+
+
+```{r}
+str(Dataset)
+```
+
+
+```{r}
+Dataset$`Age at admission` <- as.numeric(Dataset$`Age at admission`)
+Dataset$`Years since admission` <- as.numeric(Dataset$`Years since admission`)
+Dataset$`Income type` <- as.numeric(Dataset$`Income type`)
+Dataset$Statistics <- as.numeric(Dataset$Statistics)
+Dataset$UOM <- as.numeric(Dataset$UOM)
+Dataset$REF_DATE <- as.numeric(Dataset$REF_DATE)
+```
+
+
+```{r}
+boxplot(Dataset$VALUE)
+```
+
+
+```{r}
+str(Dataset)
+Dataset$Sex <- as.numeric(Dataset$Sex)
+str(Dataset)
+```
+
+
+```{r}
+cor(Dataset)
+```
+
+
+
+```{r}
+boxplot(Dataset)
+```
+
+
+```{r}
+hist(Dataset$VALUE)
+```
+
+
+```{r}
+princomp(Dataset, cor=TRUE, score=TRUE)
+summary(Dataset)
+```
+
+
+```{r}
+plot(Dataset)
+```
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
