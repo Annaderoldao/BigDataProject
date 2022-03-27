@@ -1,8 +1,8 @@
 ---
 title: "Untitled"
 output:
-  html_document: default
   word_document: default
+  html_document: default
   pdf_document: default
 date: '2022-03-06'
 ---
@@ -217,12 +217,304 @@ plot(Dataset)
 
 
 ```{r}
+cor(Dataset, method= "pearson")
 
 ```
 
 
 
 ```{r}
+cor(Dataset, method="spearman")
+```
 
+```{r}
+summary (lm(formula= Dataset$VALUE ~ Dataset$REF_DATE + Dataset$Sex + Dataset$`Age at admission` + Dataset$`Years since admission` + Dataset$`Income type` + Dataset$Statistics + Dataset$UOM))
+
+```
+
+
+```{r}
+library(RCurl)
+library(MASS)
+library(leaps)
+```
+
+```{r}
+cv_train <- sample(nrow(Dataset), floor(nrow(Dataset)*0.7))
+Train <- Dataset[cv_train,]
+Test <- Dataset[-cv_train,]
+```
+
+
+
+```{r}
+Train_model <- lm(VALUE~REF_DATE+Sex+`Age at admission`+`Years since admission`+`Income type`+Statistics+UOM, data=Train)
+Prediction_model <- predict(Train_model, interval="prediction", newdata=Test)
+summary(Train_model)
+
+
+```
+
+
+
+```{r}
+summary(Prediction_model)
+```
+
+
+```{r
+```
+```{r}
+errors <- Prediction_model[,"fit"] - Dataset$VALUE
+hist(errors)
+```
+
+
+
+```{r}
+rmse <- sqrt(sum((Prediction_model[,"fit"]- Dataset$VALUE)^2)/nrow(Test))
+rmse
+```
+
+
+
+
+```{r}
+library(MASS)
+library(leaps)
+```
+
+
+
+```{r}
+full <- lm(Dataset$VALUE ~Dataset$REF_DATE+Dataset$Sex+Dataset$`Age at admission`+Dataset$`Years since admission`+Dataset$`Income type`+Dataset$Statistics+Dataset$UOM)
+null <- lm(Dataset$VALUE~1, data=Dataset)
+stepF <- stepAIC(null, scope=list(lower=null, upper=full), direction="forward", trace=TRUE)
+summary(stepF)
+```
+
+
+
+```{r}
+full <- lm(Dataset$VALUE~Dataset$REF_DATE+Dataset$Sex+Dataset$`Age at admission`+Dataset$`Years since admission`+Dataset$`Income type`+Dataset$Statistics+Dataset$UOM)
+stepB <- stepAIC(full, direction="backward", trace=TRUE)
+summary(stepB)
+```
+
+
+```{r}
+
+library(caret)
+model_Reg <- knnreg(Dataset$VALUE~Dataset$REF_DATE+Dataset$Sex+Dataset$`Age at admission`+Dataset$`Years since admission`+Dataset$`Income type`+Dataset$Statistics+Dataset$UOM, data= Dataset)
+model_Reg
+```
+
+
+```{r}
+set.seed(1)
+Training <- createDataPartition(Dataset$VALUE, p= .70, list= FALSE)
+training_ <- Dataset[Training,]
+testing_ <- Dataset[-Training,]
+                  
+```
+
+
+```{r}
+model_RegTr <- train(VALUE~., data=training_, method='knn')
+model_RegTr
+```
+
+
+```{r}
+model_RegTrp <- train(VALUE~., data=training_, method='knn', preProcess=c("center", "scale"))
+model_RegTrp
+```
+
+
+```{r}
+predictions_ = predict(model_RegTrp, newdata=testing_)
+predictions_
+  
+```
+
+
+
+```{r}
+rmse_ <- sqrt(sum((predictions_ - testing_$VALUE)^2)/nrow(testing_))
+rmse_
+```
+
+
+```{r}
+R2 <- cor(testing_, predictions_)^2
+R2
+```
+
+
+
+
+```{r}
+set.seed(1)
+cross_validation <- trainControl(method="CV", number=10)
+```
+
+
+
+```{r}
+set.seed(1)
+Model_cv <- train(VALUE~., data=training_, method='knn', preProcess= c("center", "scale"), trControl=cross_validation)
+Model_cv
+```
+
+
+```{r}
+plot(Model_cv)
+```
+
+
+```{r}
+set.seed(1)
+Model_cva <- train(VALUE~., data=training_, method='knn', trControl=cross_validation)
+Model_cva
+```
+
+
+
+```{r}
+plot(Model_cva)
+```
+
+
+
+
+```{r}
+str(Dataset)
+```
+
+```{r}
+library(rpart)
+model = rpart(VALUE~., data=Dataset)
+model
+```
+
+
+```{r}
+Dataset$`Age at admission` <- as.numeric(Dataset$`Age at admission`)
+Dataset$`Years since admission` <- as.numeric(Dataset$`Years since admission`)
+Dataset$`Income type` <- as.numeric(Dataset$`Income type`)
+Dataset$Statistics <- as.numeric(Dataset$Statistics)
+Dataset$UOM <- as.numeric(Dataset$UOM)
+Dataset$REF_DATE <- as.numeric(Dataset$REF_DATE)
+Dataset$Sex <- as.numeric(Dataset$Sex)
+```
+
+```{r}
+library(janitor)
+Dataset2 <- clean_names(Dataset)
+names(Dataset2)
+
+```
+
+
+```{r}
+library(caret)
+library(rpart)
+library(mlbench)
+data(Dataset2)
+set.seed(1)
+ctrl <- trainControl(method = "cv", savePredictions = TRUE)
+model_T <- train(value~ref_date+sex+ age_at_admission+years_since_admission+income_type+statistics+uom, 
+                  data = Dataset2, method = 'rpart2', trControl = ctrl)
+model_T
+plot(model_T)
+```
+
+
+```{r}
+set.seed(1)
+model_T1 <- train(value~., data = Dataset2, method = "rpart2", preProcess = c("center", "scale"))
+model_T1
+
+```
+
+
+
+```{r}
+set.seed(1)
+intraining1 <- createDataPartition(Dataset2$value, p = 0.70, list = FALSE)
+training1 <- Dataset2[intraining1,]
+testing1 <- Dataset2[-intraining1, ]
+```
+
+
+
+```{r}
+set.seed(1)
+model_T2 <- train(value~., data = training1, method = "rpart2", preProcess = c("center", "scale"))
+model_T2
+```
+
+
+```{r}
+
+predictions_1 = predict(model_T2, newdata = testing1)
+
+rmse1 <- sqrt(sum((predictions_1 - testing1$value)^2)/nrow(testing1))
+rmse1
+```
+
+
+```{r}
+r2 <- cor(testing1, predictions_1)^2
+r2
+```
+
+
+
+```{r}
+set.seed(1)
+ctrl <- trainControl(method = "cv", number = 10)
+model_T3 <- train(value~., data = training1, method = "rpart2", preProcess = c("center", "scale"), trControl = ctrl)
+model_T3
+```
+
+
+```{r}
+plot(model_T3)
+```
+```{r}
+predictions_2 = predict(model_T3, newdata = testing1)
+rmse2 <- sqrt(sum((predictions_2 - testing1$value)^2)/nrow(testing1))
+rmse2
+```
+
+
+
+```{r}
+r3 <- cor(testing1, predictions_2)^2
+r3
+
+```
+
+```{r}
+library(earth)
+library(Formula)
+library(plotmo)
+library(plotrix)
+library(TeachingDemos)
+```
+
+
+```{r}
+
+set.seed(1)
+tuneGrid <- expand.grid(degree = 1, nprune = c(2, 11, 10))
+model_4 <- train(value~., data = training1, method = "earth", preProcess = c("center", "scale"), trControl = ctrl, tuneGrid = tuneGrid)
+model_4
+```
+
+
+```{r}
+plot(model_4)
 ```
 
